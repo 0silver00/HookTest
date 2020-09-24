@@ -1,6 +1,7 @@
 ﻿// dllmain.cpp : DLL 애플리케이션의 진입점을 정의합니다.
 #include "pch.h"
 #include <detours.h>
+#include <stdio.h>
 
 // 속도 확인하면서 명시적으로 바꿀 필요성 있을듯함
 #define DLLBASIC_API extern "C" __declspec(dllexport)
@@ -15,7 +16,8 @@
 static LPVOID(WINAPI* TrueVirtualAllocEx)(HANDLE hProcess, LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect) = VirtualAllocEx;
 
 DLLBASIC_API LPVOID WINAPI HookVirtualAllocEx(HANDLE hProcess, LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect) {
-    OutputDebugString(L"VirtualAllocEx Hooking SUCCESS!");
+    //OutputDebugString(L"VirtualAllocEx Hooking SUCCESS!");
+    printf("VirtualAllocEx Hooking SUCCESS!\n");
 
     return TrueVirtualAllocEx(hProcess, lpAddress, dwSize, flAllocationType, flProtect);
 }
@@ -37,20 +39,24 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         DetourAttach(&(PVOID&)TrueVirtualAllocEx, HookVirtualAllocEx);
         //DetourTransactionCommit();
         if (DetourTransactionCommit() != NO_ERROR) {
-            OutputDebugString(L"VirtualAllocEx detoured UNsuccessfully");
+            // OutputDebugString(L"VirtualAllocEx detoured UNsuccessfully");
+            printf("VirtualAllocEx detoured UNsuccessfully\n");
         }
         else
-            OutputDebugString(L"VirtualAllocEx detoured successfully");
+            printf("VirtualAllocEx detoured successfully\n");
         break;
         break;
     case DLL_THREAD_ATTACH:
+        printf("DLL_THREAD_ATTACH\n");
         break;
     case DLL_THREAD_DETACH:
+        printf("DLL_THREAD_DETACH\n");
+    case DLL_PROCESS_DETACH:
         DetourTransactionBegin();
         DetourUpdateThread(GetCurrentThread());
         DetourDetach(&(PVOID&)TrueVirtualAllocEx, HookVirtualAllocEx);
         DetourTransactionCommit();
-    case DLL_PROCESS_DETACH:
+        printf("DLL_PROCESS_DETACH\n");
         break;
     }
     return TRUE;

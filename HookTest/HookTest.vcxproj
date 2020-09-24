@@ -24,6 +24,7 @@
     <ProjectGuid>{2d60d771-4e8f-497e-9ba6-a054a0facaf0}</ProjectGuid>
     <RootNamespace>HookTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>VirtualAllocEx_Hooking</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
